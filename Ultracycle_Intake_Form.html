@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ultracycle — New Product Intake Form</title>
+<style>
+  :root {
+    --primary: #1F3864;
+    --primary-light: #2F5496;
+    --label-bg: #D9E1F2;
+    --border: #BFBFBF;
+    --muted: #595959;
+    --input-text: #0000FF;
+    --calc-bg: #F2F2F2;
+    --warn: #FFF2CC;
+    --warn-border: #E6C200;
+    --stop: #FFC7CE;
+    --stop-border: #D9534F;
+    --go: #C6EFCE;
+    --go-border: #5CB85C;
+    --body-bg: #FAFBFC;
+    --card-bg: #FFFFFF;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 14px;
+    color: #202020;
+    background: var(--body-bg);
+  }
+
+  header {
+    background: var(--primary);
+    color: white;
+    padding: 16px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  header h1 {
+    font-size: 18px;
+    margin: 0;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+  }
+
+  header .subtitle {
+    font-size: 12px;
+    opacity: 0.8;
+    margin-top: 2px;
+  }
+
+  header .actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .btn {
+    font-family: inherit;
+    font-size: 13px;
+    padding: 6px 14px;
+    border: 1px solid rgba(255,255,255,0.4);
+    background: rgba(255,255,255,0.08);
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .btn:hover { background: rgba(255,255,255,0.18); }
+  .btn-primary {
+    background: white;
+    color: var(--primary);
+    border-color: white;
+    font-weight: 600;
+  }
+  .btn-primary:hover { background: #f0f0f0; }
+
+  main {
+    max-width: 1160px;
+    margin: 20px auto;
+    padding: 0 20px;
+  }
+
+  section {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 18px;
+    overflow: hidden;
+  }
+
+  section > h2 {
+    background: var(--primary-light);
+    color: white;
+    font-size: 14px;
+    margin: 0;
+    padding: 10px 18px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+  section.hazard > h2 { background: var(--stop-border); }
+
+  .section-body {
+    padding: 16px 18px;
+  }
+
+  .note {
+    color: var(--muted);
+    font-size: 12px;
+    font-style: italic;
+    margin: 0 0 12px 0;
+    line-height: 1.5;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 8px 12px;
+    align-items: start;
+  }
+  .grid label {
+    background: var(--label-bg);
+    padding: 8px 10px;
+    font-weight: 600;
+    font-size: 13px;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    min-height: 34px;
+  }
+  .grid .field {
+    display: flex;
+    flex-direction: column;
+  }
+
+  input[type="text"],
+  input[type="number"],
+  input[type="date"],
+  textarea,
+  select {
+    font-family: inherit;
+    font-size: 13px;
+    padding: 7px 10px;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    background: white;
+    color: var(--input-text);
+    width: 100%;
+    min-height: 34px;
+  }
+  input[type="text"]:focus,
+  input[type="number"]:focus,
+  input[type="date"]:focus,
+  textarea:focus,
+  select:focus {
+    outline: 2px solid var(--primary-light);
+    outline-offset: -1px;
+  }
+  textarea {
+    resize: vertical;
+    min-height: 54px;
+    font-family: inherit;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  thead th {
+    background: var(--primary-light);
+    color: white;
+    padding: 8px 10px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.2px;
+  }
+  tbody td {
+    border: 1px solid var(--border);
+    padding: 4px 6px;
+    vertical-align: top;
+  }
+  tbody td.num { text-align: right; }
+  tbody td.center { text-align: center; }
+  tbody td.idx {
+    background: var(--label-bg);
+    font-weight: 600;
+    text-align: center;
+    width: 32px;
+  }
+  tbody td input,
+  tbody td select,
+  tbody td textarea {
+    border: none;
+    padding: 5px 6px;
+    min-height: 28px;
+    background: transparent;
+  }
+  tbody td input:focus,
+  tbody td select:focus,
+  tbody td textarea:focus {
+    outline: 2px solid var(--primary-light);
+    background: white;
+  }
+  tbody td.calc {
+    background: var(--calc-bg);
+    color: #000;
+    text-align: right;
+    padding: 7px 10px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .hazard-table tbody td:nth-child(2) { text-align: center; width: 100px; }
+  .hazard-table select { text-align: center; text-align-last: center; }
+
+  .status-pill {
+    display: inline-block;
+    padding: 8px 14px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.3px;
+  }
+  .status-pill.pending { background: var(--warn); color: #6a5500; border: 1px solid var(--warn-border); }
+  .status-pill.stop    { background: var(--stop); color: #721c24; border: 1px solid var(--stop-border); }
+  .status-pill.go      { background: var(--go);   color: #1e5b2e; border: 1px solid var(--go-border); }
+
+  .totals-row td {
+    background: var(--label-bg);
+    font-weight: 600;
+  }
+  .totals-row td.calc {
+    background: var(--calc-bg);
+    font-weight: 700;
+  }
+
+  .balance-row td {
+    background: var(--warn);
+    font-weight: 600;
+  }
+  .balance-row td.ok { background: var(--go); color: #1e5b2e; }
+  .balance-row td.err { background: var(--stop); color: #721c24; }
+
+  .row-tools {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px;
+    gap: 8px;
+  }
+  .btn-sm {
+    background: white;
+    color: var(--primary);
+    border: 1px solid var(--primary);
+    padding: 5px 12px;
+    font-size: 12px;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  .btn-sm:hover { background: var(--label-bg); }
+  .btn-danger {
+    color: var(--stop-border);
+    border-color: var(--stop-border);
+  }
+  .btn-danger:hover { background: #fff5f5; }
+
+  .net-row td {
+    background: var(--go);
+    font-weight: 700;
+    color: #1e5b2e;
+    font-size: 15px;
+    padding: 10px 10px;
+  }
+  .net-row td.calc { background: var(--go); color: #1e5b2e; }
+
+  footer {
+    max-width: 1160px;
+    margin: 30px auto;
+    padding: 0 20px;
+    color: var(--muted);
+    font-size: 12px;
+    text-align: center;
+  }
+
+  .file-input {
+    display: none;
+  }
+
+  @media (max-width: 720px) {
+    .grid { grid-template-columns: 1fr; }
+    .grid label { min-height: unset; }
+    header { flex-direction: column; align-items: flex-start; gap: 10px; }
+    table { font-size: 12px; }
+  }
+
+  @media print {
+    header, .row-tools, .btn, footer { display: none !important; }
+    body { background: white; font-size: 11px; }
+    main { margin: 0; max-width: none; padding: 0; }
+    section { border: 1px solid #888; page-break-inside: avoid; margin-bottom: 10px; }
+    section > h2 { background: #333 !important; color: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    input, select, textarea { border: 1px solid #aaa !important; color: #000 !important; }
+    .grid label { background: #eee !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    thead th { background: #333 !important; color: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .status-pill, .totals-row td, .balance-row td, .net-row td {
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Ultracycle — New Product Intake Form</h1>
+    <div class="subtitle">Southwest Logistics DBA Ultracycle · v1 mockup</div>
+  </div>
+  <div class="actions">
+    <button class="btn" id="btn-example">Load Example</button>
+    <button class="btn" id="btn-load">Load JSON…</button>
+    <input type="file" id="file-input" class="file-input" accept="application/json">
+    <button class="btn" id="btn-save">Save JSON</button>
+    <button class="btn btn-primary" id="btn-print">Print / PDF</button>
+    <button class="btn" id="btn-reset">Reset</button>
+  </div>
+</header>
+
+<main>
+  <!-- SECTION 1 — Identification -->
+  <section>
+    <h2>1.  Product Identification</h2>
+    <div class="section-body">
+      <div class="grid">
+        <label for="id_intakeid">Intake ID</label>
+        <input type="text" id="id_intakeid" placeholder="e.g. IF-2026-014  (format: IF-YYYY-NNN)">
+
+        <label for="id_date">Intake date</label>
+        <input type="date" id="id_date">
+
+        <label for="id_specialist">Intake specialist</label>
+        <input type="text" id="id_specialist" placeholder="Name">
+
+        <label for="id_product">Product common name</label>
+        <input type="text" id="id_product">
+
+        <label for="id_oem">Manufacturer / OEM</label>
+        <input type="text" id="id_oem">
+
+        <label for="id_pn">Part number / model</label>
+        <input type="text" id="id_pn">
+
+        <label for="id_customer">Source customer</label>
+        <input type="text" id="id_customer">
+
+        <label for="id_industry">Source industry / application</label>
+        <input type="text" id="id_industry" placeholder="e.g. datacenter HVAC, medical, EV battery">
+
+        <label for="id_origin">Country of origin</label>
+        <input type="text" id="id_origin">
+
+        <label for="id_units">Units received (this load)</label>
+        <input type="text" id="id_units">
+
+        <label for="id_weight">Total weight received (lb)</label>
+        <input type="text" id="id_weight">
+
+        <label for="id_arrival">Arrival condition</label>
+        <input type="text" id="id_arrival" placeholder="e.g. palletized, shrink-wrapped, loose">
+
+        <label for="id_photos">Photos / documentation folder</label>
+        <input type="text" id="id_photos" placeholder="path or link">
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 2 — Hazard Gate -->
+  <section class="hazard">
+    <h2>2.  Hazard & Safety Gate</h2>
+    <div class="section-body">
+      <p class="note">If any flag trips, STOP and escalate before proceeding.</p>
+      <table class="hazard-table" id="hazard-table">
+        <thead>
+          <tr><th style="width: 55%;">Flag</th><th>Present? (Y/N)</th><th>Notes</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <div style="margin-top: 14px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+        <div style="font-weight: 600;">Gate status:</div>
+        <div id="hazard-status" class="status-pill pending">PENDING — complete all rows incl. SDS review</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 3 — Component Inventory -->
+  <section>
+    <h2>3.  Component Inventory</h2>
+    <div class="section-body">
+      <p class="note">Physically disassemble one unit as the reference sample. Weigh each component. Identify material, fastening method, and rough % by mass. The mass-balance check validates that components sum to the sample unit weight (within 5%).</p>
+      <table id="components-table">
+        <thead>
+          <tr>
+            <th style="width: 32px;">#</th>
+            <th style="width: 18%;">Component</th>
+            <th style="width: 20%;">Material / polymer / grade</th>
+            <th style="width: 9%;">Est. wt/unit (lb)</th>
+            <th style="width: 9%;">% of unit</th>
+            <th style="width: 13%;">Fastening method</th>
+            <th style="width: 11%;">Separability</th>
+            <th>Notes</th>
+            <th style="width: 40px;"></th>
+          </tr>
+        </thead>
+        <tbody id="components-tbody"></tbody>
+        <tfoot>
+          <tr class="totals-row">
+            <td colspan="3" style="text-align: right;">Sample unit weight (lb)</td>
+            <td><input type="number" step="0.01" id="sample-weight" style="text-align: right;"></td>
+            <td class="calc" id="components-sum">—</td>
+            <td colspan="3" style="font-style: italic; color: var(--muted);">↑ sum of components</td>
+            <td></td>
+          </tr>
+          <tr class="balance-row" id="balance-row">
+            <td colspan="3" style="text-align: right;">Mass-balance check</td>
+            <td colspan="5" id="balance-status" class="center">Incomplete — enter sample unit weight and at least one component weight</td>
+            <td></td>
+          </tr>
+        </tfoot>
+      </table>
+      <div class="row-tools">
+        <button class="btn-sm" id="btn-add-component">+ Add component</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 4 — Pathway per Component -->
+  <section>
+    <h2>4.  Recovery Pathway — One Row Per Component</h2>
+    <div class="section-body">
+      <p class="note">For each component identified above, assign the recovery pathway, primary and backup vendors, and the form the material must be in. Component names are pulled from Section 3.</p>
+      <table id="pathway-table">
+        <thead>
+          <tr>
+            <th style="width: 32px;">#</th>
+            <th style="width: 18%;">Component</th>
+            <th style="width: 14%;">Pathway</th>
+            <th style="width: 13%;">Required form</th>
+            <th style="width: 14%;">Primary vendor</th>
+            <th style="width: 14%;">Backup vendor</th>
+            <th style="width: 11%;">Economics</th>
+            <th>Pathway notes</th>
+          </tr>
+        </thead>
+        <tbody id="pathway-tbody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- SECTION 5 — Disassembly Plan -->
+  <section>
+    <h2>5.  Disassembly Plan</h2>
+    <div class="section-body">
+      <div class="grid">
+        <label for="plan_sequence">Recommended disassembly sequence</label>
+        <textarea id="plan_sequence" placeholder="Step-by-step — what gets removed in what order"></textarea>
+
+        <label for="plan_tools">Equipment / tools required</label>
+        <textarea id="plan_tools" placeholder="e.g. band saw, angle grinder, baler, depalletizer"></textarea>
+
+        <label for="plan_labor">Labor estimate (min / unit)</label>
+        <input type="text" id="plan_labor">
+
+        <label for="plan_throughput">Target throughput (units / shift)</label>
+        <input type="text" id="plan_throughput">
+
+        <label for="plan_capex">Capex required to stand up this stream</label>
+        <textarea id="plan_capex" placeholder='Any new line / fixture / tooling. "$0" if existing capacity covers it.'></textarea>
+
+        <label for="plan_whole">Alternative: ship whole (no disassembly)</label>
+        <textarea id="plan_whole" placeholder="Which vendor would accept whole product? Is ship-whole economics better?"></textarea>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 6 — Economics Summary -->
+  <section>
+    <h2>6.  Per-Unit Economics</h2>
+    <div class="section-body">
+      <p class="note">Back-of-envelope per-unit numbers. Use positive values for revenue, negative for cost. Net per unit calculates live.</p>
+      <table id="economics-table">
+        <thead>
+          <tr>
+            <th style="width: 50%;">Line item</th>
+            <th style="width: 14%;">Per-unit $</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody id="economics-tbody"></tbody>
+        <tfoot>
+          <tr class="net-row">
+            <td style="text-align: right;">Net per unit</td>
+            <td class="calc" id="net-per-unit">$0.00</td>
+            <td style="font-style: italic; font-weight: normal;">Positive = profitable to process</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </section>
+
+  <!-- SECTION 7 — Recommendation & Sign-Off -->
+  <section>
+    <h2>7.  Recommendation & Sign-Off</h2>
+    <div class="section-body">
+      <div class="grid">
+        <label for="rec_model">Recommended operating model</label>
+        <textarea id="rec_model" placeholder='"Ship whole to [vendor]" OR "Disassemble in-house and split to [vendors]"'></textarea>
+
+        <label for="rec_backup">Backup / fallback model</label>
+        <textarea id="rec_backup"></textarea>
+
+        <label for="rec_risks">Primary risks and watch-outs</label>
+        <textarea id="rec_risks"></textarea>
+
+        <label for="rec_contract">Customer contract reference</label>
+        <input type="text" id="rec_contract">
+
+        <label for="rec_date">First production load target date</label>
+        <input type="date" id="rec_date">
+
+        <label for="sig_specialist">Intake specialist sign-off</label>
+        <input type="text" id="sig_specialist" placeholder="Name / date">
+
+        <label for="sig_ops">Ops manager approval</label>
+        <input type="text" id="sig_ops" placeholder="Name / date">
+
+        <label for="sig_exec">Exec sponsor approval<br><span style="font-weight: normal; font-size: 11px; color: var(--muted);">(required if hazard flagged OR capex &gt; $0)</span></label>
+        <input type="text" id="sig_exec" placeholder="Name / date">
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  Save JSON exports the form state to a local file you can email or store. Load JSON restores it. Everything stays in your browser — nothing is sent anywhere.
+</footer>
+
+<script>
+// ---------------------------------------------------------------------
+// Data
+// ---------------------------------------------------------------------
+const HAZARDS = [
+  'SDS on file and reviewed',
+  'Contains asbestos',
+  'Contains lead, mercury, cadmium, or other regulated heavy metals',
+  'Contains PCBs',
+  'Contains lithium / other live batteries',
+  'Contains radioactive sources',
+  'Biological / medical contamination',
+  'Oil, solvent, or other liquid contamination',
+  'Other RCRA / DOT regulated stream',
+];
+
+const PATHWAY_OPTIONS = [
+  '', 'Reuse/refurbish', 'Material recovery', 'Energy recovery / AFR',
+  'WTE', 'Engineered fuel', 'Landfill (last resort)'
+];
+const ECON_OPTIONS = [
+  '', 'Revenue (we are paid)', 'Neutral', 'Tipping fee (we pay)'
+];
+const SEP_OPTIONS = ['', 'Easy', 'Moderate', 'Hard', 'Not separable'];
+
+// Known qualified vendors (from the Vendor Matrix tab)
+const VENDOR_OPTIONS = [
+  'SA Recycling (Phoenix AZ)',
+  'Radius Recycling',
+  'GCC of America — Tijeras NM',
+  'Amrize (fmr Holcim US) — Tehachapi CA',
+  'CEMEX USA — Victorville CA',
+  'Ash Grove Cement — Leamington UT',
+  'Ambercycle — Los Angeles CA',
+  'Camfil USA — Filter Recycling Service',
+  'WestRock',
+  'Reworld (fmr Covanta) — Spokane WA',
+  'WIN Waste — Long Beach CA',
+  'Clean Harbors',
+];
+
+const ECON_ITEMS = [
+  'Freight in (customer pays? Ultracycle pays?)',
+  'Disassembly labor',
+  'Steel scrap revenue',
+  'Plastic/fiber commodity revenue',
+  'Tipping fee — zero-landfill / kiln',
+  'Tipping fee — other streams',
+  'Packaging / baling consumables',
+  'Freight out to offtake partners',
+  'Customer service fee (revenue)',
+];
+
+// ---------------------------------------------------------------------
+// Utilities
+// ---------------------------------------------------------------------
+const $ = (sel) => document.querySelector(sel);
+const el = (tag, attrs = {}, ...children) => {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k === 'class') e.className = v;
+    else if (k === 'style') e.style.cssText = v;
+    else if (k.startsWith('on')) e.addEventListener(k.slice(2), v);
+    else e.setAttribute(k, v);
+  }
+  for (const c of children) {
+    if (c == null) continue;
+    e.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+  }
+  return e;
+};
+const fmtMoney = (n) => {
+  if (isNaN(n) || n === null || n === '') return '$0.00';
+  return (n < 0 ? '-$' : '$') + Math.abs(n).toFixed(2);
+};
+const fmtPct = (n) => (n * 100).toFixed(1) + '%';
+
+// ---------------------------------------------------------------------
+// Section 2 — Hazard table
+// ---------------------------------------------------------------------
+function buildHazardTable() {
+  const tbody = document.querySelector('#hazard-table tbody');
+  tbody.innerHTML = '';
+  HAZARDS.forEach((hz, i) => {
+    const sel = el('select', { 'data-hazard': i, onchange: updateHazardStatus },
+      el('option', { value: '' }, '—'),
+      el('option', { value: 'Y' }, 'Y'),
+      el('option', { value: 'N' }, 'N'),
+    );
+    const note = el('input', { type: 'text', 'data-hazard-note': i });
+    tbody.appendChild(el('tr', {},
+      el('td', {}, hz),
+      el('td', {}, sel),
+      el('td', {}, note),
+    ));
+  });
+  updateHazardStatus();
+}
+
+function updateHazardStatus() {
+  const selects = document.querySelectorAll('[data-hazard]');
+  const answers = Array.from(selects).map(s => s.value);
+  // index 0 is SDS reviewed; hazards are 1..8
+  const sdsReviewed = answers[0] === 'Y';
+  const anyYes = answers.slice(1).some(a => a === 'Y');
+  const allAnswered = answers.every(a => a === 'Y' || a === 'N');
+  const statusEl = $('#hazard-status');
+  statusEl.classList.remove('pending', 'stop', 'go');
+  if (anyYes) {
+    statusEl.classList.add('stop');
+    statusEl.textContent = 'STOP — escalate to ops manager';
+  } else if (allAnswered && sdsReviewed) {
+    statusEl.classList.add('go');
+    statusEl.textContent = 'PROCEED — non-hazardous profile, SDS reviewed';
+  } else {
+    statusEl.classList.add('pending');
+    statusEl.textContent = 'PENDING — complete all rows incl. SDS review';
+  }
+}
+
+// ---------------------------------------------------------------------
+// Section 3 — Components
+// ---------------------------------------------------------------------
+function buildComponentRow(idx) {
+  const sepSel = el('select', { 'data-field': 'sep' });
+  SEP_OPTIONS.forEach(opt => sepSel.appendChild(el('option', { value: opt }, opt || '—')));
+
+  const tr = el('tr', { 'data-component-row': idx },
+    el('td', { class: 'idx' }, String(idx)),
+    el('td', {}, el('input', { type: 'text', 'data-field': 'name', oninput: onComponentNameChange })),
+    el('td', {}, el('input', { type: 'text', 'data-field': 'material' })),
+    el('td', { class: 'num' }, el('input', { type: 'number', step: '0.01', 'data-field': 'weight', oninput: recalcComponents })),
+    el('td', { class: 'calc', 'data-field': 'pct' }, '—'),
+    el('td', {}, el('input', { type: 'text', 'data-field': 'fastening' })),
+    el('td', {}, sepSel),
+    el('td', {}, el('input', { type: 'text', 'data-field': 'notes' })),
+    el('td', { class: 'center' },
+      el('button', {
+        class: 'btn-sm btn-danger',
+        style: 'padding: 4px 8px; font-size: 11px;',
+        title: 'Remove this row',
+        onclick: (e) => { e.preventDefault(); removeComponent(idx); }
+      }, '×')
+    ),
+  );
+  return tr;
+}
+
+function addComponent() {
+  const tbody = $('#components-tbody');
+  const existing = tbody.querySelectorAll('[data-component-row]').length;
+  tbody.appendChild(buildComponentRow(existing + 1));
+  renumberComponents();
+  rebuildPathwayTable();
+}
+
+function removeComponent(idx) {
+  const row = document.querySelector(`[data-component-row="${idx}"]`);
+  if (row) row.remove();
+  renumberComponents();
+  recalcComponents();
+  rebuildPathwayTable();
+}
+
+function renumberComponents() {
+  const rows = document.querySelectorAll('#components-tbody tr');
+  rows.forEach((tr, i) => {
+    tr.setAttribute('data-component-row', i + 1);
+    tr.querySelector('.idx').textContent = String(i + 1);
+  });
+}
+
+function recalcComponents() {
+  const rows = document.querySelectorAll('#components-tbody tr');
+  let sum = 0;
+  rows.forEach(tr => {
+    const w = parseFloat(tr.querySelector('[data-field="weight"]').value);
+    if (!isNaN(w)) sum += w;
+  });
+  const sample = parseFloat($('#sample-weight').value);
+  const sumCell = $('#components-sum');
+  sumCell.textContent = rows.length ? sum.toFixed(2) : '—';
+
+  // Per-row percentages
+  rows.forEach(tr => {
+    const w = parseFloat(tr.querySelector('[data-field="weight"]').value);
+    const pctCell = tr.querySelector('[data-field="pct"]');
+    if (!isNaN(w) && !isNaN(sample) && sample > 0) {
+      pctCell.textContent = fmtPct(w / sample);
+    } else {
+      pctCell.textContent = '—';
+    }
+  });
+
+  // Balance check
+  const balRow = $('#balance-row');
+  const balCell = $('#balance-status');
+  balRow.classList.remove('ok', 'err');
+  balCell.classList.remove('ok', 'err');
+  if (!isNaN(sample) && sample > 0 && sum > 0) {
+    const diff = Math.abs((sum - sample) / sample);
+    if (diff < 0.05) {
+      balCell.textContent = 'OK — within 5%';
+      balCell.classList.add('ok');
+    } else {
+      balCell.textContent = `CHECK — components (${sum.toFixed(2)} lb) and sample unit (${sample.toFixed(2)} lb) differ by ${(diff * 100).toFixed(1)}%`;
+      balCell.classList.add('err');
+    }
+  } else {
+    balCell.textContent = 'Incomplete — enter sample unit weight and at least one component weight';
+  }
+}
+
+function onComponentNameChange() {
+  rebuildPathwayTable();
+}
+
+// ---------------------------------------------------------------------
+// Section 4 — Pathway table mirrors component names
+// ---------------------------------------------------------------------
+function rebuildPathwayTable() {
+  const tbody = $('#pathway-tbody');
+  const existing = {};
+  // capture existing pathway entries keyed by component row index
+  tbody.querySelectorAll('tr').forEach((tr, i) => {
+    existing[i + 1] = {
+      pathway: tr.querySelector('[data-pfield="pathway"]').value,
+      form: tr.querySelector('[data-pfield="form"]').value,
+      v1: tr.querySelector('[data-pfield="v1"]').value,
+      v2: tr.querySelector('[data-pfield="v2"]').value,
+      econ: tr.querySelector('[data-pfield="econ"]').value,
+      notes: tr.querySelector('[data-pfield="notes"]').value,
+    };
+  });
+
+  tbody.innerHTML = '';
+  const compRows = document.querySelectorAll('#components-tbody tr');
+  compRows.forEach((cr, i) => {
+    const idx = i + 1;
+    const name = cr.querySelector('[data-field="name"]').value || '';
+    const prev = existing[idx] || {};
+
+    const pathSel = el('select', { 'data-pfield': 'pathway' });
+    PATHWAY_OPTIONS.forEach(o => pathSel.appendChild(el('option', { value: o }, o || '—')));
+    pathSel.value = prev.pathway || '';
+
+    const econSel = el('select', { 'data-pfield': 'econ' });
+    ECON_OPTIONS.forEach(o => econSel.appendChild(el('option', { value: o }, o || '—')));
+    econSel.value = prev.econ || '';
+
+    const v1Input = el('input', { type: 'text', 'data-pfield': 'v1', list: 'vendors', value: prev.v1 || '' });
+    const v2Input = el('input', { type: 'text', 'data-pfield': 'v2', list: 'vendors', value: prev.v2 || '' });
+
+    const tr = el('tr', {},
+      el('td', { class: 'idx' }, String(idx)),
+      el('td', { style: 'background: var(--calc-bg); padding: 7px 10px;' }, name || '—'),
+      el('td', {}, pathSel),
+      el('td', {}, el('input', { type: 'text', 'data-pfield': 'form', value: prev.form || '' })),
+      el('td', {}, v1Input),
+      el('td', {}, v2Input),
+      el('td', {}, econSel),
+      el('td', {}, el('input', { type: 'text', 'data-pfield': 'notes', value: prev.notes || '' })),
+    );
+    tbody.appendChild(tr);
+  });
+
+  // If no components, show one empty row as placeholder
+  if (compRows.length === 0) {
+    tbody.appendChild(el('tr', {},
+      el('td', { class: 'idx' }, '—'),
+      el('td', { colspan: '7', style: 'padding: 10px; color: var(--muted); font-style: italic;' }, 'Add components in Section 3 above; pathway rows will populate here.'),
+    ));
+  }
+}
+
+// Vendor datalist (shared across all pathway inputs)
+function buildVendorDatalist() {
+  const dl = el('datalist', { id: 'vendors' });
+  VENDOR_OPTIONS.forEach(v => dl.appendChild(el('option', { value: v })));
+  document.body.appendChild(dl);
+}
+
+// ---------------------------------------------------------------------
+// Section 6 — Economics
+// ---------------------------------------------------------------------
+function buildEconomicsTable() {
+  const tbody = $('#economics-tbody');
+  tbody.innerHTML = '';
+  ECON_ITEMS.forEach((label, i) => {
+    tbody.appendChild(el('tr', {},
+      el('td', {}, label),
+      el('td', { class: 'num' },
+        el('input', {
+          type: 'number', step: '0.01', 'data-econ': i,
+          oninput: recalcEconomics,
+          style: 'text-align: right;'
+        })
+      ),
+      el('td', {}, el('input', { type: 'text', 'data-econ-note': i })),
+    ));
+  });
+}
+
+function recalcEconomics() {
+  let sum = 0;
+  document.querySelectorAll('[data-econ]').forEach(inp => {
+    const v = parseFloat(inp.value);
+    if (!isNaN(v)) sum += v;
+  });
+  $('#net-per-unit').textContent = fmtMoney(sum);
+}
+
+// ---------------------------------------------------------------------
+// Save / Load / Reset
+// ---------------------------------------------------------------------
+function serialize() {
+  const data = {
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    identification: {},
+    hazards: [],
+    components: [],
+    sampleWeight: $('#sample-weight').value,
+    pathways: [],
+    disassembly: {},
+    economics: [],
+    recommendation: {},
+  };
+  // Identification
+  document.querySelectorAll('[id^="id_"]').forEach(inp => {
+    data.identification[inp.id.replace('id_', '')] = inp.value;
+  });
+  // Hazards
+  HAZARDS.forEach((hz, i) => {
+    data.hazards.push({
+      flag: hz,
+      present: document.querySelector(`[data-hazard="${i}"]`)?.value || '',
+      note: document.querySelector(`[data-hazard-note="${i}"]`)?.value || '',
+    });
+  });
+  // Components
+  document.querySelectorAll('#components-tbody tr').forEach(tr => {
+    data.components.push({
+      name: tr.querySelector('[data-field="name"]').value,
+      material: tr.querySelector('[data-field="material"]').value,
+      weight: tr.querySelector('[data-field="weight"]').value,
+      fastening: tr.querySelector('[data-field="fastening"]').value,
+      separability: tr.querySelector('[data-field="sep"]').value,
+      notes: tr.querySelector('[data-field="notes"]').value,
+    });
+  });
+  // Pathways
+  document.querySelectorAll('#pathway-tbody tr[data-pfield], #pathway-tbody tr').forEach(tr => {
+    const pathway = tr.querySelector('[data-pfield="pathway"]');
+    if (!pathway) return;  // placeholder row
+    data.pathways.push({
+      pathway: pathway.value,
+      form: tr.querySelector('[data-pfield="form"]').value,
+      primaryVendor: tr.querySelector('[data-pfield="v1"]').value,
+      backupVendor: tr.querySelector('[data-pfield="v2"]').value,
+      economics: tr.querySelector('[data-pfield="econ"]').value,
+      notes: tr.querySelector('[data-pfield="notes"]').value,
+    });
+  });
+  // Disassembly
+  ['sequence', 'tools', 'labor', 'throughput', 'capex', 'whole'].forEach(k => {
+    data.disassembly[k] = $(`#plan_${k}`).value;
+  });
+  // Economics
+  ECON_ITEMS.forEach((label, i) => {
+    data.economics.push({
+      item: label,
+      amount: document.querySelector(`[data-econ="${i}"]`).value,
+      note: document.querySelector(`[data-econ-note="${i}"]`).value,
+    });
+  });
+  // Recommendation
+  ['model', 'backup', 'risks', 'contract', 'date'].forEach(k => {
+    data.recommendation[k] = $(`#rec_${k}`).value;
+  });
+  data.recommendation.sigSpecialist = $('#sig_specialist').value;
+  data.recommendation.sigOps = $('#sig_ops').value;
+  data.recommendation.sigExec = $('#sig_exec').value;
+  return data;
+}
+
+function deserialize(data) {
+  if (!data) return;
+  // Identification
+  Object.entries(data.identification || {}).forEach(([k, v]) => {
+    const inp = document.getElementById('id_' + k);
+    if (inp) inp.value = v;
+  });
+  // Hazards
+  (data.hazards || []).forEach((h, i) => {
+    const sel = document.querySelector(`[data-hazard="${i}"]`);
+    const note = document.querySelector(`[data-hazard-note="${i}"]`);
+    if (sel) sel.value = h.present || '';
+    if (note) note.value = h.note || '';
+  });
+  // Components
+  const tbody = $('#components-tbody');
+  tbody.innerHTML = '';
+  (data.components || []).forEach((c, i) => {
+    const tr = buildComponentRow(i + 1);
+    tbody.appendChild(tr);
+    tr.querySelector('[data-field="name"]').value = c.name || '';
+    tr.querySelector('[data-field="material"]').value = c.material || '';
+    tr.querySelector('[data-field="weight"]').value = c.weight || '';
+    tr.querySelector('[data-field="fastening"]').value = c.fastening || '';
+    tr.querySelector('[data-field="sep"]').value = c.separability || '';
+    tr.querySelector('[data-field="notes"]').value = c.notes || '';
+  });
+  $('#sample-weight').value = data.sampleWeight || '';
+  rebuildPathwayTable();
+  // Now populate pathway values
+  (data.pathways || []).forEach((p, i) => {
+    const tr = document.querySelector(`#pathway-tbody tr:nth-child(${i + 1})`);
+    if (!tr) return;
+    const set = (f, v) => {
+      const el = tr.querySelector(`[data-pfield="${f}"]`);
+      if (el) el.value = v || '';
+    };
+    set('pathway', p.pathway);
+    set('form', p.form);
+    set('v1', p.primaryVendor);
+    set('v2', p.backupVendor);
+    set('econ', p.economics);
+    set('notes', p.notes);
+  });
+  // Disassembly
+  Object.entries(data.disassembly || {}).forEach(([k, v]) => {
+    const inp = document.getElementById('plan_' + k);
+    if (inp) inp.value = v;
+  });
+  // Economics
+  (data.economics || []).forEach((e, i) => {
+    const amt = document.querySelector(`[data-econ="${i}"]`);
+    const note = document.querySelector(`[data-econ-note="${i}"]`);
+    if (amt) amt.value = e.amount || '';
+    if (note) note.value = e.note || '';
+  });
+  // Recommendation
+  Object.entries(data.recommendation || {}).forEach(([k, v]) => {
+    if (k.startsWith('sig')) return;
+    const inp = document.getElementById('rec_' + k);
+    if (inp) inp.value = v;
+  });
+  $('#sig_specialist').value = data.recommendation?.sigSpecialist || '';
+  $('#sig_ops').value = data.recommendation?.sigOps || '';
+  $('#sig_exec').value = data.recommendation?.sigExec || '';
+  updateHazardStatus();
+  recalcComponents();
+  recalcEconomics();
+}
+
+function saveJSON() {
+  const data = serialize();
+  const id = data.identification.intakeid || 'intake';
+  const safeId = id.replace(/[^A-Za-z0-9_-]/g, '_');
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const a = el('a', { href: URL.createObjectURL(blob), download: `${safeId}.json` });
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+function loadJSONFile(file) {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      deserialize(JSON.parse(e.target.result));
+    } catch (err) {
+      alert('Could not parse JSON: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+}
+
+function resetForm() {
+  if (!confirm('Reset the form? All unsaved data will be lost.')) return;
+  document.querySelectorAll('input, textarea, select').forEach(inp => {
+    if (inp.classList.contains('file-input')) return;
+    inp.value = '';
+  });
+  $('#components-tbody').innerHTML = '';
+  for (let i = 0; i < 5; i++) addComponent();
+  updateHazardStatus();
+  recalcComponents();
+  recalcEconomics();
+}
+
+// ---------------------------------------------------------------------
+// Example data (Parker Clean-Pak 0597014)
+// ---------------------------------------------------------------------
+const EXAMPLE_DATA = {
+  version: 1,
+  identification: {
+    intakeid: 'IF-2026-014',
+    date: '2026-04-21',
+    specialist: 'Dalton / Ultracycle intake',
+    product: 'Clean-Pak High-Efficiency Synthetic Bag Filter',
+    oem: 'Parker Hannifin — HVAC Filtration Division',
+    pn: '0597014  (model CP-M12-242412-10)',
+    customer: '[Datacenter customer name]',
+    industry: 'Hyperscale datacenter HVAC, final filtration',
+    origin: 'USA',
+    units: '96 units (24 cartons × 4)',
+    weight: '2,112 lb  (96 × 22 lb)',
+    arrival: 'Palletized, shrink-wrapped, 8 pallets',
+    photos: '/ultracycle/intake/IF-2026-014-cleanpak/',
+  },
+  hazards: [
+    { flag: HAZARDS[0], present: 'Y', note: 'Parker UL 900 classification on file. Non-haz datacenter dust only.' },
+    { flag: HAZARDS[1], present: 'N', note: '' },
+    { flag: HAZARDS[2], present: 'N', note: '' },
+    { flag: HAZARDS[3], present: 'N', note: '' },
+    { flag: HAZARDS[4], present: 'N', note: '' },
+    { flag: HAZARDS[5], present: 'N', note: '' },
+    { flag: HAZARDS[6], present: 'N', note: '' },
+    { flag: HAZARDS[7], present: 'N', note: 'Dry dust only, no oils present.' },
+    { flag: HAZARDS[8], present: 'N', note: '' },
+  ],
+  components: [
+    { name: 'Galvanized steel header / frame', material: 'Steel sheet, zinc coated (~24 ga)', weight: '3.8',
+      fastening: 'Mechanical corners', separability: 'Easy',
+      notes: 'Whole rail — shears cleanly. Strong ferrous scrap value.' },
+    { name: 'Synthetic filter media (pockets)', material: '100% synthetic nonwoven, triple-layer (polymer TBD — Parker to confirm PET vs PP)',
+      weight: '14.5', fastening: 'Sonic weld at pockets; pressure-fit into header', separability: 'Moderate',
+      notes: 'Cleanest synthetic stream — no adhesive bonding at seams.' },
+    { name: 'Reinforcement straps (yellow)', material: 'Polypropylene webbing', weight: '0.8',
+      fastening: 'Sewn to media, inserted in header', separability: 'Hard',
+      notes: 'Small share — stays with media stream for downstream processing.' },
+    { name: 'Pocket separators / retainers', material: 'Cardboard or thermoplastic (verify by lot)',
+      weight: '2.0', fastening: 'Inserted inside pockets', separability: 'Moderate',
+      notes: 'If cardboard: OCC recycle. If plastic: goes with media stream.' },
+    { name: 'Datacenter dust loading', material: 'Silicates, carbon, fines (non-hazardous)',
+      weight: '0.9', fastening: 'Captured in media', separability: 'Not separable',
+      notes: 'Rides with media — burned off in kiln or captured as inerts.' },
+  ],
+  sampleWeight: '22',
+  pathways: [
+    { pathway: 'Material recovery', form: 'Whole rail; no further prep',
+      primaryVendor: 'SA Recycling (Phoenix AZ)', backupVendor: 'Radius Recycling',
+      economics: 'Revenue (we are paid)',
+      notes: 'Shear frame at disassembly; goes directly to ferrous scrap bin.' },
+    { pathway: 'Material recovery', form: 'Baled nonwoven bales (if Parker confirms PET)',
+      primaryVendor: 'Ambercycle — Los Angeles CA',
+      backupVendor: 'GCC of America — Tijeras NM',
+      economics: 'Neutral',
+      notes: 'Pilot-scale clean bales to Ambercycle once disassembly line is live; fallback to kiln.' },
+    { pathway: 'Material recovery', form: 'Stays with media stream',
+      primaryVendor: 'Same as media stream', backupVendor: 'Same as media stream',
+      economics: 'Neutral',
+      notes: 'Too small a fraction to warrant separate offtake.' },
+    { pathway: 'Material recovery', form: 'If cardboard → OCC; if plastic → with media',
+      primaryVendor: 'WestRock', backupVendor: 'Local OCC baler',
+      economics: 'Neutral',
+      notes: 'Confirm pocket material per Parker production lot.' },
+    { pathway: 'Energy recovery / AFR', form: 'Stays with media',
+      primaryVendor: 'GCC of America — Tijeras NM',
+      backupVendor: 'Amrize (fmr Holcim US) — Tehachapi CA',
+      economics: 'Tipping fee (we pay)',
+      notes: 'Inerts become clinker feedstock; carbon fraction burned for BTU.' },
+  ],
+  disassembly: {
+    sequence: '1) Depalletize and inspect. 2) Shear steel header/retainers off the filter body (band saw or shears). 3) Collect synthetic body + straps + pocket separators as one bale-ready stream. 4) Bale or shred media depending on downstream vendor spec. 5) Weigh and log each output stream.',
+    tools: 'Band saw or pneumatic shear; baler; scale; forklift. No new equipment required.',
+    labor: '8 min/unit target after learning curve',
+    throughput: '~60 units/shift (single operator)',
+    capex: '$0 — existing shop capacity sufficient for Phase 1 (cement kiln pathway). Phase 2 fiber-to-fiber pathway adds washing line — capex TBD (~$80–150k estimate).',
+    whole: 'Yes — Whole filters can ship directly to GCC Tijeras NM without disassembly. Trade-off: loss of steel scrap revenue (~$0.15/lb × 3.8 lb = ~$0.57/unit), offset by labor savings. Recommended only for first 1–2 shipments while disassembly process is being tuned.',
+  },
+  economics: [
+    { item: ECON_ITEMS[0], amount: '0.00', note: 'Customer pays freight under contract.' },
+    { item: ECON_ITEMS[1], amount: '-0.60', note: '8 min @ $25/hr loaded labor split across disassembly throughput; ~$0.60/unit.' },
+    { item: ECON_ITEMS[2], amount: '0.57', note: '3.8 lb × $0.15/lb ferrous scrap.' },
+    { item: ECON_ITEMS[3], amount: '0.00', note: 'Pending Phase 2 — Ambercycle offtake; no revenue assumed today.' },
+    { item: ECON_ITEMS[4], amount: '-0.85', note: '~18 lb × $95/ton tipping at GCC Tijeras = ~$0.85/unit (inclusive of freight).' },
+    { item: ECON_ITEMS[5], amount: '0.00', note: 'N/A — no other streams in Phase 1.' },
+    { item: ECON_ITEMS[6], amount: '-0.08', note: 'Bale wrap / wire.' },
+    { item: ECON_ITEMS[7], amount: '0.00', note: 'Included in kiln tipping estimate above.' },
+    { item: ECON_ITEMS[8], amount: '2.50', note: 'Ultracycle service fee per unit billed to datacenter customer.' },
+  ],
+  recommendation: {
+    model: 'Disassemble in-house: steel → scrap yard, synthetic media/straps/separators → cement kiln AFR (GCC Tijeras). Parallel workstream: qualify Ambercycle as Phase 3 offtake pending polymer confirmation.',
+    backup: 'Ship whole to cement kiln if disassembly throughput lags or steel markets soften below $0.10/lb.',
+    risks: 'Polymer confirmation from Parker is gate to Phase 3. Datacenter dust analysis should be obtained from customer to simplify kiln pre-qualification. Watch steel scrap pricing — if it drops, whole-ship becomes economic.',
+    contract: 'MSA-2026-[xxx] with datacenter customer; filter-recovery SOW addendum pending.',
+    date: '2026-05-15',
+    sigSpecialist: '', sigOps: '', sigExec: '',
+  },
+};
+
+// ---------------------------------------------------------------------
+// Init
+// ---------------------------------------------------------------------
+function init() {
+  buildHazardTable();
+  buildVendorDatalist();
+  buildEconomicsTable();
+  for (let i = 0; i < 5; i++) addComponent();
+  recalcComponents();
+  recalcEconomics();
+  rebuildPathwayTable();
+
+  $('#sample-weight').addEventListener('input', recalcComponents);
+  $('#btn-add-component').addEventListener('click', (e) => { e.preventDefault(); addComponent(); });
+  $('#btn-save').addEventListener('click', saveJSON);
+  $('#btn-load').addEventListener('click', () => $('#file-input').click());
+  $('#file-input').addEventListener('change', (e) => {
+    if (e.target.files[0]) loadJSONFile(e.target.files[0]);
+    e.target.value = '';
+  });
+  $('#btn-reset').addEventListener('click', resetForm);
+  $('#btn-print').addEventListener('click', () => window.print());
+  $('#btn-example').addEventListener('click', () => deserialize(EXAMPLE_DATA));
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
